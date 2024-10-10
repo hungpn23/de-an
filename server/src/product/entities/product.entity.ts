@@ -1,9 +1,11 @@
+import { CartItem } from 'src/cart/entities/cart-item.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -37,6 +39,9 @@ export class Product {
 
   @Column()
   averageReview: number;
+
+  @OneToMany(() => CartItem, (cartItem) => cartItem.product, { cascade: true })
+  cartItems: CartItem[];
 
   @CreateDateColumn()
   createdAt: Date;
