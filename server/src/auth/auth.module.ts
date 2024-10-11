@@ -4,9 +4,10 @@ import { AuthController } from './auth.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
 import { AuthMiddleware } from './auth.middleware';
+import { Cart } from 'src/cart/entities/cart.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User, Cart])],
   controllers: [AuthController],
   providers: [AuthService],
 })

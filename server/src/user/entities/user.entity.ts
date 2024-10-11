@@ -28,6 +28,10 @@ export class User {
   @Column({ default: 'user' })
   role: string;
 
+  @OneToOne(() => Cart, { cascade: true })
+  @JoinColumn()
+  cart: Cart;
+
   @OneToMany(() => Address, (address) => address.user, { cascade: true })
   addresses: Address[];
 

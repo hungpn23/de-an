@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from 'src/product/entities/product.entity';
@@ -30,22 +31,18 @@ export class CartService {
 
     const product = await this.productRepo.findOneBy({ id: +productId });
     if (!product) throw new NotFoundException('Product not found');
-    const user = await this.userRepo.findOneBy({ id: +userId });
+    let user = await this.userRepo.findOneBy({ id: +userId });
 
-    let cart = await this.cartRepo.findOneBy({ user });
-    if (!cart) {
-      cart = this.cartRepo.create();
-      cart.user = user;
-      cart = await this.cartRepo.save(cart);
-    }
-
-    let cartItem = await this.cartItemRepo.findOneBy({
-      cart,
-      product,
+    let cartItem = await this.cartItemRepo.findOne({
+      where: {
+        cart: user.cart,
+        product,
+      },
+      relations: ['cart', 'product'],
     });
     if (!cartItem) {
       cartItem = this.cartItemRepo.create();
-      cartItem.cart = cart;
+      cartItem.cart = user.cart;
       cartItem.product = product;
       cartItem.quantity += quantity;
       cartItem = await this.cartItemRepo.save(cartItem);
@@ -54,9 +51,21 @@ export class CartService {
       cartItem = await this.cartItemRepo.save(cartItem);
     }
 
-    return await this.cartRepo.findOne({
-      where: { id: cart.id },
-      relations: ['user', 'cartItem'],
+    console.log('success');
+
+    return cartItem;
+  }
+
+  async fetchCartItems(userId: string) {
+    const user = await this.userRepo.findOneBy({ id: +userId });
+    console.log(`🚀 ~ CartService ~ fetchCartItems ~ user:`, user);
+    if (!user) throw new NotFoundException('User not found');
+
+    console.log(user.cart);
+    const cartItems = await this.cartItemRepo.find({
+      where: { cart: user.cart },
+      relations: ['cart', 'product'],
     });
+    console.log(`🚀 ~ CartService ~ fetchCartItems ~ cartItems:`, cartItems);
   }
 }

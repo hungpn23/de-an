@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Any, In, Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 
 @Injectable()
@@ -10,16 +10,16 @@ export class ShopProductService {
     private readonly productRepo: Repository<Product>,
   ) {}
   async getFilteredProducts(query: {
-    category?: string[];
-    brand?: string[];
+    category?: string;
+    brand?: string;
     sortBy: string;
   }) {
     let { category, brand, sortBy = 'price-lowtohigh' } = query;
 
     return await this.productRepo.find({
       where: {
-        category: category ? In(this.toArray(category)) : null,
-        brand: brand ? In(this.toArray(brand)) : null,
+        category: category ? In(category.split(',')) : undefined,
+        brand: brand ? In(brand.split(',')) : undefined,
       },
 
       order: this.getOrderOptions(sortBy),
@@ -31,10 +31,6 @@ export class ShopProductService {
     if (!product) throw new NotFoundException('Product not found');
 
     return product;
-  }
-
-  private toArray(value: string | string[]): string[] {
-    return Array.isArray(value) ? value : [value];
   }
 
   private getOrderOptions(sortBy: string) {

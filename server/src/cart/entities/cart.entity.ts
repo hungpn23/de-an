@@ -15,10 +15,6 @@ export class Cart {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User, { cascade: true })
-  @JoinColumn()
-  user: User;
-
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart, { cascade: true })
   cartItems: CartItem[];
 

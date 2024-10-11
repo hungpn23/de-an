@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { CartService } from './cart.service';
 
 @Controller('/shop/cart')
@@ -13,6 +13,21 @@ export class CartController {
       return {
         success: true,
         data: await this.cartService.addToCart(body),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error,
+      };
+    }
+  }
+
+  @Get('/get/:userId')
+  async fetchCartItems(@Param('userId') userId: string) {
+    try {
+      return {
+        success: true,
+        data: await this.cartService.fetchCartItems(userId),
       };
     } catch (error) {
       return {

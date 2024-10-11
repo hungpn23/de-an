@@ -7,7 +7,7 @@ export class ShopProductController {
 
   @Get('/get')
   async getFilteredProducts(
-    @Query() query: { category?: string[]; brand?: string[]; sortBy: string },
+    @Query() query: { category?: string; brand?: string; sortBy: string },
   ) {
     try {
       return {

@@ -6,16 +6,19 @@ import { RegisterDto } from './dto/register-dto';
 import { LoginDto } from './dto/login-dto';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { Cart } from 'src/cart/entities/cart.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(Cart) private cartRepo: Repository<Cart>,
     private jwtService: JwtService,
   ) {}
 
   async register(registerDto: RegisterDto) {
     const user = this.userRepo.create(registerDto);
+    user.cart = this.cartRepo.create();
     return await this.userRepo.save(user);
   }
 
